@@ -109,7 +109,8 @@ void enable_serial_port(GtkWidget *widget, gpointer data){
 	g_print("enable_serial_port...\n");
 	if(open_port("/dev/ttyUSB0") >= 0){
 		g_print("open port ok...\n");
-		close_port();
+		
+		//close_port();
 	}else{
 		g_print("open port error!...\n");
 	}
@@ -118,6 +119,8 @@ void enable_serial_port(GtkWidget *widget, gpointer data){
 //help info
 void show_help(GtkWidget *widget, gpointer data){
 	g_print("show help...\n");
+	unsigned char buf[]={0x66,0xAA,0x11,0x00,0x82,0x00,0x00,0x6C};
+	write_data(buf, 8);
 }
 
 //show expand view
