@@ -22,7 +22,7 @@ SRCS=./ui/ui.c \
 OBJS=$(patsubst %.c,%.o,$(wildcard *.c))
 OBJS1=ui.o event.o serial.o stool.o 
 #编译GTK程序时要用到的库 
-LIBS=gtk+-2.0
+LIBS=gtk+-3.0
 #---- 用户修改区域 结束
 
 CFLAGS=`pkg-config --cflags ${LIBS}` -g -Wall -lpthread
