@@ -6,7 +6,7 @@
 
 
 #include "serial.h"
-
+static int read_loop = 0;
 //open serial port
 //int serial_fd = -1;
 int open_port(char* name)
@@ -48,6 +48,7 @@ int open_port(char* name)
 int close_port()
 {
 	g_print("close port ...");
+	read_loop = 0;
 	return close(serial_fd);
 }
 
@@ -68,9 +69,10 @@ int read_data(unsigned char* buf,int num)
 
 void *thrd_func(void *arg){
 	g_print("start thrd func...\n");
+	read_loop = 1;
 	unsigned char buf[512];
 		int size=0;
-		while(1){
+		while(read_loop){
 		g_print("start to read data...");
 		if((size = read_data(buf,256)) > 0){
 			serial_device->read_data_callback(buf,size);

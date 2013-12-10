@@ -107,16 +107,22 @@ void set_serial_port(GtkWidget *widget, gpointer data){
 }
 
 //open close serial port
+static int serial_port_status = 0;
 void enable_serial_port(GtkWidget *widget, gpointer data){
 	g_print("enable_serial_port...\n");
-	serial_device = (struct serial_device_t *)malloc(sizeof(struct serial_device_t));
-	serial_device -> read_data_callback = data_from_serial_port;
-	if(open_port("/dev/ttyUSB0") >= 0){
-		g_print("open port ok...\n");
-		
+	if(serial_port_status == 0){
+		serial_device = (struct serial_device_t *)malloc(sizeof(struct serial_device_t));
+		serial_device -> read_data_callback = data_from_serial_port;
+		if(open_port("/dev/ttyUSB0") >= 0){
+			g_print("open port ok...\n");
+			serial_port_status = 1;
+		}else{
+			g_print("open port error!...\n");
+		}
 	}else{
-		g_print("open port error!...\n");
-	}
+		close_port();
+		serial_port_status = 0;
+   }
 }
 
 	
