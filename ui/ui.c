@@ -248,7 +248,9 @@ void make_third_line(){
 	gtk_container_add(GTK_CONTAINER(vbox_r2),label_html_info);
 
 	//字符串输入框
-	inputbox_sendmessage = gtk_text_view_new();
+	GtkTextBuffer* char_input_buffer =  gtk_text_buffer_new(NULL);
+	inputbox_sendmessage = gtk_text_view_new_with_buffer(char_input_buffer);/*创建文本视图构件*/
+	//inputbox_sendmessage = gtk_text_view_new();
 	gtk_container_add(GTK_CONTAINER(hbox_r2),inputbox_sendmessage);
 
 	g_print("make_third_line finished....\n");

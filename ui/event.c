@@ -1,4 +1,5 @@
 #include <glib.h>
+#include <string.h>
 #include "ui.h"
 #include "event.h"
 
@@ -62,6 +63,7 @@ void save_window(GtkWidget *widget, gpointer data){
 //clear window
 void clear_window(GtkWidget *widget, gpointer data){
 	g_print(" clear window...\n");
+	gtk_text_buffer_set_text (display_buffer, "", -1);
 }
 
 //set hex display
@@ -205,6 +207,104 @@ void set_send_new_line(GtkWidget *widget, gpointer data){
 	g_print("set_send_new_line...\n");
 }
 
+void send_msg(unsigned char* msg,int len){
+	write_data(msg, len);
+}
+
+int is_hex_char(char c){
+	if(c >= '0' && c<= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F')
+		return 1;
+	else 
+		return 0; 
+}
+int is_int_char(char c){
+	if(c >= '0' && c<= '9' )
+		return 1;
+	else 
+		return 0;
+}
+
+int is_little_hex_char(char c){
+	if(c >= 'a' && c <= 'f')
+		return 1;
+	else 
+		return 0;
+}
+
+int is_big_hex_char(char c){
+	if(c >= 'A' && c <= 'F')
+		return 1;
+	else 
+		return 0;
+}
+
+int char_to_int(char c){
+	if( is_int_char(c))
+		return c - '0';
+	if(is_little_hex_char(c))
+		return c - 'a' + 10;
+	if(is_big_hex_char(c))
+		return c - 'A' + 10;
+	return -1;
+}
+
+//66 AA 11  00  82 00 00  6C
+
+int string_to_databuf(char* string,int len,unsigned char* data){
+	g_print("char len: %d",sizeof(char));
+	char* p = string;
+	int count = 0;
+	int i = 0;
+	unsigned char data1,data2;
+	while(p - string < len){
+
+		if(is_hex_char(p[0]) && is_hex_char(p[1])){
+			g_print("p0: %c, p1: %c \n",p[0],p[1]);
+			data1 = char_to_int(p[0]);
+			data2 = char_to_int(p[1]);
+			g_print("data1:%u,data2:%u\n",data1,data2);
+			if(data1 == -1 || data2 == -1){
+				p++;
+				continue;			
+			}
+			data[count++] = data1*16+data2;//((data1 & 0x01) << 4 ) | (data2 & 0x01);
+			g_print("data[%d] : %x  ",count-1 ,data[count-1]);
+			p+=2;
+		}else{
+			if(p[0] == ' '){
+				p++;
+				continue;
+			}
+			g_print("data input error :%d: !!!!\n",p[0]);
+			return 0;
+		}
+	}
+	g_print("data count: %d \n",count);
+	return count;
+}
+
+
+
+
 void start_send_msg(GtkWidget *widget, gpointer data){
 	g_print("start send message...\n");
+	GtkTextBuffer* gb = gtk_text_view_get_buffer (GTK_TEXT_VIEW (inputbox_sendmessage));
+	char * str_msg = get_text_from_gtktextbuffer(gb);
+	g_print("str_msg: %s ,len:%d \n",str_msg,strlen(str_msg));
+	unsigned char buf[128];
+	//char* msg = strtok(str_msg," ");
+	//while(msg != NULL){
+		//g_print("msg: %s \n",msg);
+	//}
+	int len = string_to_databuf(str_msg,strlen(str_msg),buf);
+	send_msg(buf,len);
+}
+
+
+unsigned char* get_text_from_gtktextbuffer(GtkTextBuffer* gbuffer){
+	GtkTextIter start,end;
+	gtk_text_buffer_get_start_iter(gbuffer,&start);
+ 	gtk_text_buffer_get_end_iter(gbuffer,&end);
+
+	return gtk_text_buffer_get_text (gbuffer,&start,&end,TRUE);
 }

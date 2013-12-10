@@ -51,4 +51,6 @@ void set_send_new_line(GtkWidget *widget, gpointer data);
 void start_send_msg(GtkWidget *widget, gpointer data);
 
 int data_from_serial_port(unsigned char* buf,int size);
+
+unsigned char* get_text_from_gtktextbuffer(GtkTextBuffer* gbuffer);
 #endif
