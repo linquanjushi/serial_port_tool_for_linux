@@ -96,7 +96,7 @@ enum{
 
 static GtkWidget* ctrol_combs[5];//波特率，数据位，停止位，校验位，流控制
 
-GtkTextBuffer *data_buffer;
+//GtkTextBuffer *data_buffer;
 
 
 #endif

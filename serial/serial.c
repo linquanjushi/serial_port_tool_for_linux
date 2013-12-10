@@ -8,10 +8,10 @@
 #include "serial.h"
 
 //open serial port
-int serial_fd = -1;
+//int serial_fd = -1;
 int open_port(char* name)
 {
-	//system("chmod 666 /dev/ttyUSB0");
+	//system("sudo chmod 666 /dev/ttyUSB0");
 	//"/dev/ttyUSB0"
 	serial_fd = open(name, O_RDWR | O_NOCTTY | O_NDELAY);
 	//serial_fd = open(name, O_RDWR | O_NOCTTY );
@@ -28,16 +28,16 @@ int open_port(char* name)
 		 if(isatty(serial_fd))
 	      {
 				g_print("isatty\n");
-                        struct termios  ios;
-                        tcgetattr(serial_fd, &ios);
+                struct termios  ios;
+                tcgetattr(serial_fd, &ios);
 
                        // LOGI("set to 115200bps, 8-N-1");
-                        bzero(&ios, sizeof(ios));
-                        ios.c_cflag = B4800 | CS8 | CLOCAL | CREAD;
-                        ios.c_iflag = IGNPAR;
-                        ios.c_oflag = 0;
-                        ios.c_lflag = 0;  // disable ECHO, ICANON, etc... 
-						tcsetattr(serial_fd, TCSANOW, &ios);
+                bzero(&ios, sizeof(ios));
+                ios.c_cflag = B4800 | CS8 | CLOCAL | CREAD;
+                ios.c_iflag = IGNPAR;
+                ios.c_oflag = 0;
+                ios.c_lflag = 0;  // disable ECHO, ICANON, etc... 
+				tcsetattr(serial_fd, TCSANOW, &ios);
            }
 		//fcntl(serial_fd, F_SETFL, 0);
 	     start_readThread();
@@ -63,23 +63,19 @@ int write_data(unsigned char* buf,int size)
 int read_data(unsigned char* buf,int num)
 {
 	int n = read(serial_fd,buf,num);
-	return 0;
+	return n;
 }
 
 void *thrd_func(void *arg){
 	g_print("start thrd func...\n");
-	unsigned char buf[24];
+	unsigned char buf[512];
 		int size=0;
 		while(1){
 		g_print("start to read data...");
-		while((size = read_data(buf,8)) > 0){
-			int i=0;
-			for(i=0;i<size;i++){
-				g_print("%x ",buf[i]);
-			}
-			g_printf("\n");
+		if((size = read_data(buf,256)) > 0){
+			serial_device->read_data_callback(buf,size);
 		}
-			if(size == 0){g_print("no data \n");}
+			if(size == 0){g_print(" no data \n");}
 			usleep(1000000);
 			//break;	
 		}
@@ -89,7 +85,7 @@ void *thrd_func(void *arg){
 
 int start_readThread(){
 	g_print("start read thread...\n");
-	pthread_t tid;
+	//pthread_t tid;
 	  // 创建线程tid，且线程函数由thrd_func指向，是thrd_func的入口点，即马上执行此线程函数
 	
     if (pthread_create(&tid,NULL,thrd_func,NULL)!=0) {

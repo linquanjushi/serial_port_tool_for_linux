@@ -1,6 +1,8 @@
 #ifndef LINQUAN_SRAIL_MODEL_H
 #define LINQUAN_SRAIL_MODEL_H
 
+#include<gtk/gtk.h>
+
 static const char* serial_port_list[]={
 	"ttyUSB0",
 	"ttyS0",
@@ -15,6 +17,8 @@ static const char* ctrol_list[]={
 	"校验位",
 	"流控制"
 };
+
+GtkTextBuffer* display_buffer;
 
 #endif
 

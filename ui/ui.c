@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "event.h"
+#include "../model/model.h"
 
 /*组装所有显示组件*/
 void makeUI(){
@@ -61,13 +62,15 @@ void makeDisplayArea(){
 	gtk_container_add(GTK_CONTAINER(hbox_display),scrolled);/*将滚动窗口构件加入窗体*/
 	//gtk_widget_show(scrolled);/*显示滚动窗口构件*/
 
-
-	display_area = gtk_text_view_new();/*创建文本视图构件*/
-	data_buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (display_area));
-	gtk_text_buffer_set_text (data_buffer, "Your 1st GtkTextView widget!", -1);
+	display_buffer =  gtk_text_buffer_new(NULL);
+	display_area = gtk_text_view_new_with_buffer(display_buffer);/*创建文本视图构件*/
+	//data_buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (display_area));
+	//gtk_text_buffer_set_text (data_buffer, "Your 1st GtkTextView widget!", -1);
 	gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (display_area), GTK_WRAP_WORD);
 	gtk_text_view_set_justification (GTK_TEXT_VIEW (display_area), GTK_JUSTIFY_LEFT);
 	gtk_text_view_set_editable (GTK_TEXT_VIEW (display_area), FALSE);
+	
+	//gtk_source_view_set_indent_on_tab(GTK_SOURCE_VIEW(display_area),TRUE);//
 	//gtk_text_view_get_buffer()
 	//gtk_text_buffer_set_text()
 /*

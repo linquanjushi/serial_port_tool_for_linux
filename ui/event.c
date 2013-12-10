@@ -1,6 +1,6 @@
+#include <glib.h>
 #include "ui.h"
 #include "event.h"
-//#include "../serial/serial.h"
 
 void  cb_exit(GtkWidget *widget, gpointer data) {
 	// 按钮"button"的回调函数  
@@ -107,13 +107,39 @@ void set_serial_port(GtkWidget *widget, gpointer data){
 //open close serial port
 void enable_serial_port(GtkWidget *widget, gpointer data){
 	g_print("enable_serial_port...\n");
+	serial_device = (struct serial_device_t *)malloc(sizeof(struct serial_device_t));
+	serial_device -> read_data_callback = data_from_serial_port;
 	if(open_port("/dev/ttyUSB0") >= 0){
 		g_print("open port ok...\n");
 		
-		//close_port();
 	}else{
 		g_print("open port error!...\n");
 	}
+}
+
+	
+int data_from_serial_port(unsigned char* buf,int size){
+	g_print("data come from serial port:\n");
+	unsigned char sbuf[258];// = (unsigned char*)g_malloc()(258);
+	int i=0;
+
+	GtkTextIter iter;
+	gtk_text_buffer_get_end_iter(display_buffer,&iter);
+	int len = 0;
+	int pindex = 0;
+	for(i=0;i<size;i++){
+		g_print("%0x ",buf[i]);
+		len = sprintf(sbuf+pindex,"%02x  ",buf[i]);
+		pindex += len;
+		g_print("index:%d,len:%d, pindex:%d ",i,len,pindex);
+		//gtk_text_buffer_insert (display_buffer,&iter,g_locale_to_utf8(sbuf,len,NULL,NULL, NULL),2);
+	}
+		
+		g_print("\n%s",sbuf);
+		gtk_text_buffer_insert (display_buffer,&iter,sbuf,-1);
+	g_print("\n");
+
+
 }
 
 //help info

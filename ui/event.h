@@ -2,6 +2,9 @@
 #define LINQUAN_SERIAL_TOOL_EVENT_H
 
 #include "../serial/serial.h"
+
+char sbuf[512+10];
+
 //exit
 void  cb_exit(GtkWidget *widget, gpointer data);
 
@@ -47,4 +50,5 @@ void set_hex_send(GtkWidget *widget, gpointer data);
 void set_send_new_line(GtkWidget *widget, gpointer data);
 void start_send_msg(GtkWidget *widget, gpointer data);
 
+int data_from_serial_port(unsigned char* buf,int size);
 #endif
